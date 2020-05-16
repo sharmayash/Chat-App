@@ -1,3 +1,4 @@
+const cors = require("cors")
 const express = require("express")
 const passport = require("passport")
 const schema = require("./graphql/index")
@@ -8,16 +9,20 @@ const port = process.env.PORT || 4000
 
 // --------- Middlewares -----------
 
-// 1. db config
+// 1 Allow request for client from different port and url
+
+app.use(cors())
+
+// 2. db config
 
 require("./dbConfig/")
 
-// 2. passport
+// 3. passport
 
 app.use(passport.initialize())
 require("./config/passport")(passport)
 
-// 3. Graphql
+// 4. Graphql
 
 app.use(
   "/graphql",
