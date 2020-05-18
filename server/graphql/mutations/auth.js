@@ -16,8 +16,13 @@ createUser = {
   },
   async resolve(parent, { name, email, username, password }) {
     try {
-      const ExistingUser = Auth.findOne({ email })
-      if (ExistingUser) return Error("User with this email already Exist")
+      const ExistingEmail = await Auth.findOne({ email })
+      const ExistingUsername = await Auth.findOne({ username })
+
+      if (ExistingEmail) return Error("User with this email already Exist")
+
+      if (ExistingUsername)
+        return Error("User with this Username already Exist")
 
       // create hash of password
       let salt = bcrypt.genSaltSync(11)

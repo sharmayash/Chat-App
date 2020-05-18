@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
+import { connect } from "react-redux"
+import React, { useState, useEffect } from "react"
+import { signup } from "../../../redux/actions/authActions"
 import { makeStyles } from "@material-ui/core/styles"
 import {
   Card,
@@ -38,6 +40,12 @@ function Signup(props) {
     password: "",
   })
 
+  useEffect(() => {
+    if (props.auth.isAuthenticated) {
+      props.history.push("/")
+    }
+  }, [props])
+
   const handleChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.value })
   }
@@ -45,15 +53,8 @@ function Signup(props) {
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    const newUser = {
-      name: state.name,
-      email: state.email,
-      username: state.username,
-      password: state.password,
-    }
-
-    console.log(newUser)
-    // props.registerUser(newUser, props.history)
+    const { name, email, username, password } = state
+    props.signup(name, email, username, password, props.history)
   }
 
   return (
@@ -145,6 +146,13 @@ function Signup(props) {
   )
 }
 
-Signup.propTypes = {}
+Signup.propTypes = {
+  signup: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+}
 
-export default Signup
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+})
+
+export default connect(mapStateToProps, { signup })(Signup)
