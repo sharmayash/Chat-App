@@ -3,13 +3,13 @@ import jwt_decode from "jwt-decode"
 import { ERRORS, SET_CURRENT_USER } from "./types"
 import setTokenOnAllRoutes from "../../utils/setTokenOnAllRoutes"
 
-export const signup = (name, email, username, password, history) => (
+export const signup = (name, email, username, password, cPassword, history) => (
   dispatch
 ) => {
   const reqBody = {
     query: `
       mutation {
-        createUser(name: "${name}", email: "${email}", username: "${username}", password:"${password}") {
+        createUser(name: "${name}", email: "${email}", username: "${username}", password: "${password}", password2: "${cPassword}") {
           token
         }
       }
@@ -19,24 +19,31 @@ export const signup = (name, email, username, password, history) => (
   axios
     .post("/graphql", reqBody)
     .then((res) => {
-      // get token
-      const { token } = res.data.data.createUser
-      // save token to local storage
-      localStorage.setItem("jwtToken", token)
-      // set token to Auth header
-      setTokenOnAllRoutes(token)
-      // Decode The data stored in token
-      const decoded = jwt_decode(token)
-      //set current user
-      dispatch(setCurrentUser(decoded))
-    })
-    .then(() => {
-      history.push("/")
+      if (res.data.data.createUser) {
+        // get token
+        const { token } = res.data.data.createUser
+        // save token to local storage
+        localStorage.setItem("jwtToken", token)
+        // set token to Auth header
+        setTokenOnAllRoutes(token)
+        // Decode The data stored in token
+        const decoded = jwt_decode(token)
+        //set current user
+        dispatch(setCurrentUser(decoded))
+        // redirect to home page
+        history.push("/")
+      }
+      if (res.data.errors) {
+        dispatch({
+          type: ERRORS,
+          payload: res.data.errors[0].message,
+        })
+      }
     })
     .catch((err) => {
       dispatch({
         type: ERRORS,
-        payload: err.response.data,
+        payload: err,
       })
     })
 }

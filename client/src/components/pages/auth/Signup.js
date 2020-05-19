@@ -5,9 +5,10 @@ import { signup } from "../../../redux/actions/authActions"
 import { makeStyles } from "@material-ui/core/styles"
 import {
   Card,
-  CardContent,
-  TextField,
   Button,
+  TextField,
+  Typography,
+  CardContent,
   CardActions,
 } from "@material-ui/core"
 
@@ -38,6 +39,7 @@ function Signup(props) {
     email: "",
     username: "",
     password: "",
+    password2: "",
   })
 
   useEffect(() => {
@@ -53,8 +55,8 @@ function Signup(props) {
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    const { name, email, username, password } = state
-    props.signup(name, email, username, password, props.history)
+    const { name, email, username, password, password2 } = state
+    props.signup(name, email, username, password, password2, props.history)
   }
 
   return (
@@ -73,13 +75,13 @@ function Signup(props) {
               variant="outlined"
               fullWidth
             />
-            {/* {props.errors.name ? (
-            <Typography variant="caption" color="secondary">
-              {props.errors.name}
-            </Typography>
-          ) : (
-            ""
-          )} */}
+            {props.errors.name ? (
+              <Typography variant="caption" color="secondary">
+                {props.errors.name}
+              </Typography>
+            ) : (
+              ""
+            )}
             <TextField
               required
               margin="dense"
@@ -91,13 +93,13 @@ function Signup(props) {
               variant="outlined"
               fullWidth
             />
-            {/* {props.errors.username ? (
-            <Typography variant="caption" color="secondary">
-              {props.errors.username}
-            </Typography>
-          ) : (
-            ""
-          )} */}
+            {props.errors.username ? (
+              <Typography variant="caption" color="secondary">
+                {props.errors.username}
+              </Typography>
+            ) : (
+              ""
+            )}
             <TextField
               required
               margin="dense"
@@ -109,13 +111,13 @@ function Signup(props) {
               variant="outlined"
               fullWidth
             />
-            {/* {props.errors.emailLogin ? (
-          <Typography variant="caption" color="secondary">
-            {props.errors.emailLogin}
-          </Typography>
-        ) : (
-          ""
-        )} */}
+            {props.errors.email ? (
+              <Typography variant="caption" color="secondary">
+                {props.errors.email}
+              </Typography>
+            ) : (
+              ""
+            )}
             <TextField
               required
               margin="dense"
@@ -127,13 +129,31 @@ function Signup(props) {
               variant="outlined"
               fullWidth
             />
-            {/* {props.errors.passwordLogin ? (
-          <Typography variant="caption" color="secondary">
-            {props.errors.passwordLogin}
-          </Typography>
-        ) : (
-          ""
-        )} */}
+            {props.errors.password ? (
+              <Typography variant="caption" color="secondary">
+                {props.errors.password}
+              </Typography>
+            ) : (
+              ""
+            )}
+            <TextField
+              required
+              margin="dense"
+              label="Confirm Password"
+              type="password"
+              name="password2"
+              value={state.password2}
+              onChange={handleChange}
+              variant="outlined"
+              fullWidth
+            />
+            {props.errors.password2 ? (
+              <Typography variant="caption" color="secondary">
+                {props.errors.password2}
+              </Typography>
+            ) : (
+              ""
+            )}
           </CardContent>
           <CardActions className={classes.actions}>
             <Button type="submit" variant="contained" className={classes.btn}>
@@ -149,10 +169,12 @@ function Signup(props) {
 Signup.propTypes = {
   signup: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
+  errors: state.errors,
 })
 
 export default connect(mapStateToProps, { signup })(Signup)
