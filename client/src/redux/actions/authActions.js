@@ -62,21 +62,30 @@ export const login = (email, password) => (dispatch) => {
   axios
     .post("/graphql", reqBody)
     .then((res) => {
-      // get token
-      const { token } = res.data.data.signIn
-      // save token to local storage
-      localStorage.setItem("jwtToken", token)
-      // set token to Auth header
-      setTokenOnAllRoutes(token)
-      // Decode The data stored in token
-      const decoded = jwt_decode(token)
-      //set current user
-      dispatch(setCurrentUser(decoded))
+      if (res.data.data.signIn) {
+        // get token
+        const { token } = res.data.data.signIn
+        // save token to local storage
+        localStorage.setItem("jwtToken", token)
+        // set token to Auth header
+        setTokenOnAllRoutes(token)
+        // Decode The data stored in token
+        const decoded = jwt_decode(token)
+        //set current user
+        dispatch(setCurrentUser(decoded))
+      }
+
+      if (res.data.errors) {
+        dispatch({
+          type: ERRORS,
+          payload: res.data.errors[0].message,
+        })
+      }
     })
     .catch((err) => {
       dispatch({
         type: ERRORS,
-        payload: err.response.data,
+        payload: err,
       })
     })
 }

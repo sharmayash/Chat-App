@@ -6,13 +6,14 @@ import { makeStyles } from "@material-ui/core/styles"
 import { login } from "../../../redux/actions/authActions"
 
 import {
+  Grid,
   Dialog,
+  Button,
+  TextField,
+  Typography,
   DialogTitle,
   DialogActions,
   DialogContent,
-  TextField,
-  Button,
-  Grid,
 } from "@material-ui/core"
 
 const useStyles = makeStyles((theme) => ({
@@ -88,13 +89,13 @@ function InitialAuthPage(props) {
             variant="outlined"
             fullWidth
           />
-          {/* {props.errors.emailLogin ? (
+          {props.errors.emailLogin ? (
             <Typography variant="caption" color="secondary">
               {props.errors.emailLogin}
             </Typography>
           ) : (
             ""
-          )} */}
+          )}
           <TextField
             required
             margin="dense"
@@ -106,13 +107,13 @@ function InitialAuthPage(props) {
             variant="outlined"
             fullWidth
           />
-          {/* {props.errors.passwordLogin ? (
+          {props.errors.passwordLogin ? (
             <Typography variant="caption" color="secondary">
               {props.errors.passwordLogin}
             </Typography>
           ) : (
             ""
-          )} */}
+          )}
         </DialogContent>
         <DialogActions className={classes.actions}>
           <Link to="/signup" className={classes.register} onClick={handleClose}>
@@ -154,7 +155,7 @@ function InitialAuthPage(props) {
           Sign Up
         </Button>
       </Grid>
-      {true ? Login() : ""}
+      {!props.auth.isAuthenticated ? Login() : ""}
     </header>
   )
 }
@@ -162,10 +163,12 @@ function InitialAuthPage(props) {
 InitialAuthPage.propTypes = {
   login: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
+  errors: state.errors,
 })
 
 export default connect(mapStateToProps, { login })(InitialAuthPage)
