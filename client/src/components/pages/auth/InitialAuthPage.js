@@ -1,10 +1,7 @@
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
-import React, { useState } from "react"
 import { Link } from "react-router-dom"
-import { makeStyles } from "@material-ui/core/styles"
-import { login } from "../../../redux/actions/authActions"
-
+import React, { useState, useCallback } from "react"
 import {
   Grid,
   Dialog,
@@ -15,6 +12,9 @@ import {
   DialogActions,
   DialogContent,
 } from "@material-ui/core"
+import { makeStyles } from "@material-ui/core/styles"
+
+import { login } from "../../../redux/actions/authActions"
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -59,9 +59,12 @@ function InitialAuthPage(props) {
     setOpen(false)
   }
 
-  const handleChange = (event) => {
-    setFormValue({ ...formValue, [event.target.name]: event.target.value })
-  }
+  const handleChange = useCallback(
+    (e) => {
+      setFormValue({ ...formValue, [e.target.name]: e.target.value })
+    },
+    [formValue]
+  )
 
   const handleSubmit = (e) => {
     e.preventDefault()

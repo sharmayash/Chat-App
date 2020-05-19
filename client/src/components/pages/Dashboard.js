@@ -2,15 +2,15 @@ import React from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 
-import Home from "./Home"
 import InitialAuthPage from "./auth/InitialAuthPage"
+import OurDrawer from "../common/OurDrawer"
 
 const Dashboard = (props) => {
   let dashboardContent
   const { isAuthenticated } = props.auth
 
   if (isAuthenticated) {
-    dashboardContent = <Home />
+    dashboardContent = <OurDrawer />
   } else {
     dashboardContent = <InitialAuthPage />
   }
