@@ -2,6 +2,7 @@ import clsx from "clsx"
 import React from "react"
 
 import { makeStyles } from "@material-ui/core/styles"
+import { deepPurple } from "@material-ui/core/colors"
 
 import MenuIcon from "@material-ui/icons/Menu"
 import MessageIcon from "@material-ui/icons/Message"
@@ -17,7 +18,10 @@ import {
   CssBaseline,
   ListItemText,
 } from "@material-ui/core"
-import Home from "../pages/Home"
+
+import Home from "../pages/Home/Home"
+import CrmHome from "../pages/CRM/CrmHome"
+import MessagingHome from "../pages/Messaging/MessagingHome"
 
 const drawerWidth = 200
 const useStyles = makeStyles((theme) => ({
@@ -31,11 +35,12 @@ const useStyles = makeStyles((theme) => ({
     display: "none",
   },
   drawer: {
-    width: drawerWidth,
     flexShrink: 0,
+    width: drawerWidth,
     whiteSpace: "nowrap",
   },
   drawerOpen: {
+    background: deepPurple.A200,
     width: drawerWidth,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
@@ -43,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   drawerClose: {
+    background: deepPurple.A200,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -58,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
 export default function OurDrawer() {
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
+  const [dashHome, setDashHome] = React.useState(<Home />)
 
   const handleDrawerOpen = () => {
     setOpen(true)
@@ -65,6 +72,10 @@ export default function OurDrawer() {
 
   const handleDrawerClose = () => {
     setOpen(false)
+  }
+
+  const handleHome = (component) => {
+    setDashHome(component)
   }
 
   return (
@@ -102,19 +113,23 @@ export default function OurDrawer() {
             </ListItem>
           )}
           <Divider />
-          <ListItem button key="Dashboard">
+          <ListItem button key="Dashboard" onClick={() => handleHome(<Home />)}>
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </ListItem>
-          <ListItem button key="Messaging">
+          <ListItem
+            button
+            key="Messaging"
+            onClick={() => handleHome(<MessagingHome />)}
+          >
             <ListItemIcon>
               <MessageIcon />
             </ListItemIcon>
             <ListItemText primary="Messaging" />
           </ListItem>
-          <ListItem button key="CRM">
+          <ListItem button key="CRM" onClick={() => handleHome(<CrmHome />)}>
             <ListItemIcon>
               <BusinessIcon />
             </ListItemIcon>
@@ -123,7 +138,7 @@ export default function OurDrawer() {
         </List>
         <Divider />
       </Drawer>
-      <Home />
+      {dashHome}
     </div>
   )
 }

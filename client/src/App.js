@@ -1,6 +1,7 @@
 import React from "react"
 import jwt_decode from "jwt-decode"
 import { Provider } from "react-redux"
+import { blueGrey } from "@material-ui/core/colors"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
 
 // Importing app files
@@ -41,7 +42,7 @@ function App() {
           style={{
             flexGrow: 1,
             height: "100vh",
-            background: "linear-gradient(0deg, #c7c7c7 5%, #fff 95%)",
+            backgroundColor: blueGrey[100],
           }}
         >
           <Switch>
