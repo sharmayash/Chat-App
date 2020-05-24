@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 
 import { makeStyles } from "@material-ui/core/styles"
+import { deepPurple } from "@material-ui/core/colors"
 import AccountCircle from "@material-ui/icons/AccountCircle"
 import PersonAddRounded from "@material-ui/icons/PersonAddRounded"
 import ContactsTwoTone from "@material-ui/icons/ContactsTwoTone"
@@ -13,13 +14,15 @@ import {
   AppBar,
   Hidden,
   Toolbar,
+  ListItem,
   Typography,
   IconButton,
   Tooltip,
 } from "@material-ui/core"
 
-import ContactItem from "./ContactItem"
-import ContactDialog from "./ContactDialog"
+import ContactItem from "./contacts/ContactItem"
+import ContactDialog from "./contacts/ContactDialog"
+import MessageBox from "./Messages/MessageBox"
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -37,8 +40,6 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   list: {
-    width: "100%",
-    maxWidth: "45ch",
     marginTop: "10px",
     maxHeight: "85vh",
     overflow: "auto",
@@ -47,20 +48,42 @@ const useStyles = makeStyles((theme) => ({
       height: 0,
     },
   },
+  listItem: {
+    backgroundColor: "#fff",
+    borderRadius: "10px",
+    border: `1px solid ${deepPurple.A200}`,
+  },
+  contacts: {
+    maxWidth: "45ch",
+  },
+  messages: {
+    flexGrow: 1,
+  },
 }))
 
 function MessagingHome(props) {
   const classes = useStyles()
-  const [open, setOpen] = React.useState(false)
-  const [selectedValue, setSelectedValue] = React.useState("")
-  const { user } = props.auth
+  const [isDialogOpen, setDialogOpen] = React.useState(false)
+  const [selectedUsername, setSelectedValue] = React.useState("")
+  // const { user } = props.auth
+  const usersList = [
+    "user01",
+    "user02",
+    "user1",
+    "user1",
+    "user1",
+    "user1",
+    "user1",
+    "user1",
+    "user1",
+  ]
 
   const handleClickOpen = () => {
-    setOpen(true)
+    setDialogOpen(true)
   }
 
   const handleClose = (value) => {
-    setOpen(false)
+    setDialogOpen(false)
     setSelectedValue(value)
   }
 
@@ -71,7 +94,7 @@ function MessagingHome(props) {
           <Grid container spacing={2}>
             <Grid item xs={9} sm={10} md={11} className={classes.tool}>
               <Typography className={classes.title} variant="h6" noWrap>
-                {selectedValue}
+                {selectedUsername}
               </Typography>
             </Grid>
             <Grid item xs={3} sm={2} md={1} className={classes.tool}>
@@ -101,38 +124,36 @@ function MessagingHome(props) {
       <Grid
         container
         direction="row"
-        justify="space-evenly"
-        alignItems="baseline"
+        justify="flex-start"
+        alignItems="flex-start"
       >
-        <Grid item md={4}>
+        <Grid item className={classes.contacts}>
           <Hidden only={["xs", "sm"]}>
             <List className={classes.list}>
-              <ContactItem />
-              <ContactItem />
-              <ContactItem />
-              <ContactItem />
-              <ContactItem />
-              <ContactItem />
-              <ContactItem />
-              <ContactItem />
+              {usersList.map((email) => (
+                <div style={{ margin: "5px", padding: "10px" }}>
+                  <ListItem
+                    key={email}
+                    onClick={() => setSelectedValue(email)}
+                    alignItems="flex-start"
+                    className={classes.listItem}
+                  >
+                    <ContactItem />
+                  </ListItem>
+                </div>
+              ))}
             </List>
           </Hidden>
         </Grid>
-        <Grid item md={8}>
-          <h1>
-            There is one limitation with the negative margin we use to implement
-            the spacing between items. A horizontal scroll will appear if a
-            negative margin goes beyond the There are 3 available
-            workarounds:Not using the spacing feature and implementing it in
-            user space spacing . Applying padding to the parent with at least
-            half the spacing value applied to the child
-          </h1>
+        <Grid item className={classes.messages}>
+          <MessageBox />
         </Grid>
       </Grid>
       <ContactDialog
-        selectedValue={selectedValue}
-        open={open}
+        selectedValue={selectedUsername}
+        open={isDialogOpen}
         onClose={handleClose}
+        usersList={usersList}
       />
     </main>
   )

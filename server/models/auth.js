@@ -6,6 +6,13 @@ const AuthSchema = new mongoose.Schema(
     email: String,
     username: String,
     password: String,
+    isOnline: Boolean,
+    rooms: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "room",
+      },
+    ],
   },
   {
     timestamps: true,
