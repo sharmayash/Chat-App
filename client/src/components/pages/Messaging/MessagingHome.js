@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import socketIOClient from "socket.io-client"
 
 import { makeStyles } from "@material-ui/core/styles"
 import { deepPurple } from "@material-ui/core/colors"
@@ -66,7 +67,8 @@ const useStyles = makeStyles((theme) => ({
 
 function MessagingHome(props) {
   const classes = useStyles()
-  const [state, setState] = React.useState({
+  const [socket] = useState(socketIOClient("http://localhost:4000"))
+  const [state, setState] = useState({
     MenuEleTxt: null,
     isDialogOpen: false,
     openFormDialog: false,
@@ -74,6 +76,14 @@ function MessagingHome(props) {
     isAddNewContact: true,
   })
   // const { user } = props.auth
+
+  useEffect(() => {
+    socket.emit("test", "Message From client", (data) => {
+      console.log(data)
+    })
+    socket.on("fromServer", (data) => console.log(data))
+  }, [socket])
+
   const usersList = ["user01", "user02"]
 
   const openContactFunc = () => {

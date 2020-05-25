@@ -8,9 +8,10 @@ const ioServer = (io) => {
   io.on("connection", (socket) => {
     console.log(`Socket connected ${socket.id}`)
 
-    socket.on("test", (data) => {
-      console.log(3144, data)
-      socket.emit("fromServer", `3144 test ${data}`)
+    socket.on("test", (data, ackFunc) => {
+      console.log(data)
+      ackFunc("Ack. Func Data")
+      socket.emit("fromServer", `Message From Server with event`) // another event
     })
 
     socket.on("joinGroup", async (data, ackFunc) => {
