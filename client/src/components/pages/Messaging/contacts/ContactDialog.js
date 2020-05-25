@@ -14,10 +14,11 @@ import {
 } from "@material-ui/core"
 
 import PersonAddRounded from "@material-ui/icons/PersonAddRounded"
+import GroupAddRounded from "@material-ui/icons/GroupAddRounded"
 import ContactItem from "./ContactItem"
 
 function ContactDialog(props) {
-  const { onClose, selectedValue, open, usersList } = props
+  const { onClose, selectedValue, open, usersList, openForm } = props
 
   const handleClose = () => {
     onClose(selectedValue)
@@ -25,6 +26,9 @@ function ContactDialog(props) {
 
   const handleListItemClick = (value) => {
     onClose(value)
+  }
+  const handleActionClick = (val) => {
+    openForm(val)
   }
 
   return (
@@ -48,17 +52,21 @@ function ContactDialog(props) {
           ))}
         </DialogContent>
         <DialogActions>
-          <ListItem
-            autoFocus
-            button
-            onClick={() => handleListItemClick("addAccount")}
-          >
+          <ListItem autoFocus button onClick={() => handleActionClick(true)}>
             <ListItemAvatar>
               <Avatar>
                 <PersonAddRounded />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary="Add account" />
+            <ListItemText secondary="Add Contact" />
+          </ListItem>
+          <ListItem autoFocus button onClick={() => handleActionClick(false)}>
+            <ListItemAvatar>
+              <Avatar>
+                <GroupAddRounded />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText secondary="Create New Group" />
           </ListItem>
         </DialogActions>
       </List>
