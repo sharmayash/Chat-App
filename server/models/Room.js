@@ -3,6 +3,7 @@ const mongoose = require("mongoose")
 const RoomSchema = new mongoose.Schema(
   {
     roomName: String,
+    passCode: String,
     isPrivate: Boolean,
     admin: {
       type: mongoose.Schema.ObjectId,

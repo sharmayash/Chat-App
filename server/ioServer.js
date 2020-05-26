@@ -52,17 +52,30 @@ const ioServer = (io) => {
     })
 
     socket.on("createGroup", async (data, ackFunc) => {
-      const { isPrivate, roomName, user_id } = data
+      const { isPrivate, roomName, passCode, user_id } = data
+      let newRoom
 
-      const room = new Room({
-        isPrivate,
-        roomName,
-        admin: user_id,
-        usersAvailable: [user_id],
-      })
+      if (isPrivate) {
+        newRoom = {
+          roomName,
+          isPrivate,
+          passCode,
+          admin: user_id,
+          usersAvailable: [user_id],
+        }
+      } else {
+        newRoom = {
+          roomName,
+          isPrivate,
+          admin: user_id,
+          usersAvailable: [user_id],
+        }
+      }
+
+      const room = await new Room(newRoom)
 
       await Auth.findOneAndUpdate({
-        _id: user_id,
+        id: user_id,
         $push: { rooms: room._id },
       })
         .then(() => ackFunc("Room Added To Your Account"))
@@ -75,7 +88,7 @@ const ioServer = (io) => {
         .then(() => ackFunc("Room Created"))
         .catch((err) => ackFunc("Error In Creating Room"))
 
-      socket.join(room_name, (err) => {
+      socket.join(roomName, (err) => {
         if (err) ackFunc(err)
         ackFunc(true)
       })

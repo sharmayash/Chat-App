@@ -17,11 +17,13 @@ import Dashboard from "./components/pages/Dashboard"
 
 // check for existing user session / check for tokens
 
-if (localStorage.jwtToken) {
+if (localStorage.jwtToken && localStorage.userId) {
   //set auth token header
   setTokenOnAllRoutes(localStorage.jwtToken)
   //decode token and get user information
   const decoded = jwt_decode(localStorage.jwtToken)
+
+  decoded.id = localStorage.userId
   //set user and isAuthenticated
   store.dispatch(setCurrentUser(decoded))
   // check for expired token

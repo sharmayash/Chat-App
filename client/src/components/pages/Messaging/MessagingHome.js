@@ -75,7 +75,7 @@ function MessagingHome(props) {
     selectedUsername: "",
     isAddNewContact: true,
   })
-  // const { user } = props.auth
+  const { user } = props.auth
 
   useEffect(() => {
     socket.emit("test", "Message From client", (data) => {
@@ -182,12 +182,15 @@ function MessagingHome(props) {
         open={state.isDialogOpen}
         onClose={closeContactFunc}
         usersList={usersList}
+        socket={socket}
         openForm={openFormFunc}
       />
       <AddFormDialog
+        socket={socket}
+        userId={user.id}
+        onClose={closeFormFunc}
         open={state.openFormDialog}
         isAddNewContact={state.isAddNewContact}
-        onClose={closeFormFunc}
       />
       <Menu
         id="simple-menu"
