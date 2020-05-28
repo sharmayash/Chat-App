@@ -16,7 +16,8 @@ const ioServer = (io) => {
 
     socket.on("joinGroup", async (data, ackFunc) => {
       const room = await Room.findOne({
-        name: data.room_name,
+        roomName: data.roomName,
+        passCode: data.passCode,
       })
         .populate({
           path: "chats",

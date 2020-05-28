@@ -1,5 +1,7 @@
-import React, { useState } from "react"
 import PropTypes from "prop-types"
+import { connect } from "react-redux"
+import React, { useState } from "react"
+import { getRooms } from "../../../../redux/actions/roomActions"
 
 import {
   Dialog,
@@ -35,7 +37,8 @@ function AddFormDialog(props) {
       },
       (ackdata) => console.log(ackdata)
     )
-    console.log(state.roomName, state.passCode, isPrivate)
+
+    props.getRooms(userId)
   }
 
   const handleChange = (e) => {
@@ -132,7 +135,10 @@ function AddFormDialog(props) {
 AddFormDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  getRooms: PropTypes.func.isRequired,
   isAddNewContact: PropTypes.bool.isRequired,
 }
 
-export default AddFormDialog
+const mapStateToProps = (state) => ({})
+
+export default connect(mapStateToProps, { getRooms })(AddFormDialog)

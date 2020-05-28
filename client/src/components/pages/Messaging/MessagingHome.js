@@ -6,8 +6,8 @@ import socketIOClient from "socket.io-client"
 import { makeStyles } from "@material-ui/core/styles"
 import { deepPurple } from "@material-ui/core/colors"
 import AccountCircle from "@material-ui/icons/AccountCircle"
-import AddCircleOutlineRounded from "@material-ui/icons/AddCircleOutlineRounded"
 import ContactsTwoTone from "@material-ui/icons/ContactsTwoTone"
+import AddCircleOutlineRounded from "@material-ui/icons/AddCircleOutlineRounded"
 
 import {
   Grid,
@@ -17,16 +17,15 @@ import {
   Hidden,
   Toolbar,
   Tooltip,
-  ListItem,
   MenuItem,
   Typography,
   IconButton,
 } from "@material-ui/core"
 
-import ContactItem from "./contacts/ContactItem"
 import ContactDialog from "./contacts/ContactDialog"
 import AddFormDialog from "./contacts/AddFormDialog"
 import MessageBox from "./Messages/MessageBox"
+import RoomBox from "./contacts/RoomBox"
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -67,31 +66,28 @@ const useStyles = makeStyles((theme) => ({
 
 function MessagingHome(props) {
   const classes = useStyles()
-  const [socket] = useState(socketIOClient("http://localhost:4000"))
+  const [socket, setSocket] = useState(null)
   const [state, setState] = useState({
     MenuEleTxt: null,
     isDialogOpen: false,
     openFormDialog: false,
-    selectedUsername: "",
+    selectedRoom: "",
     isAddNewContact: true,
   })
-  const { user } = props.auth
 
   useEffect(() => {
-    socket.emit("test", "Message From client", (data) => {
-      console.log(data)
-    })
-    socket.on("fromServer", (data) => console.log(data))
-  }, [socket])
+    setSocket(socketIOClient.connect("http://localhost:4000"))
+  }, [])
 
-  const usersList = ["user01", "user02"]
+  const { user } = props.auth
+  const usersList = ["user1"]
 
   const openContactFunc = () => {
     setState({ ...state, isDialogOpen: true })
   }
 
   const closeContactFunc = (value) => {
-    setState({ ...state, isDialogOpen: false, selectedUsername: value })
+    setState({ ...state, isDialogOpen: false, selectedRoom: value })
   }
 
   const openFormFunc = (isOpenNewContact) => {
@@ -121,7 +117,7 @@ function MessagingHome(props) {
           <Grid container spacing={2}>
             <Grid item xs={9} sm={10} md={11} className={classes.tool}>
               <Typography className={classes.title} variant="h6" noWrap>
-                {state.selectedUsername}
+                {state.selectedRoom}
               </Typography>
             </Grid>
             <Grid item xs={3} sm={2} md={1} className={classes.tool}>
@@ -157,19 +153,7 @@ function MessagingHome(props) {
         <Grid item className={classes.contacts}>
           <Hidden only={["xs", "sm"]}>
             <List className={classes.list}>
-              {usersList.map((email) => (
-                <div key={email} style={{ margin: "5px", padding: "10px" }}>
-                  <ListItem
-                    onClick={() =>
-                      setState({ ...state, selectedUsername: email })
-                    }
-                    alignItems="flex-start"
-                    className={classes.listItem}
-                  >
-                    <ContactItem />
-                  </ListItem>
-                </div>
-              ))}
+              <RoomBox userId={user.id} />
             </List>
           </Hidden>
         </Grid>
@@ -178,7 +162,7 @@ function MessagingHome(props) {
         </Grid>
       </Grid>
       <ContactDialog
-        selectedValue={state.selectedUsername}
+        selectedValue={state.selectedRoom}
         open={state.isDialogOpen}
         onClose={closeContactFunc}
         usersList={usersList}
@@ -230,10 +214,12 @@ function MessagingHome(props) {
 
 MessagingHome.propTypes = {
   auth: PropTypes.object.isRequired,
+  room: PropTypes.object.isRequired,
 }
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
+  room: state.room,
 })
 
-export default connect(mapStateToProps, {})(MessagingHome)
+export default connect(mapStateToProps)(MessagingHome)
