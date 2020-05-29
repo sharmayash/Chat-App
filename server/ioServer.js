@@ -15,10 +15,7 @@ const ioServer = (io) => {
     })
 
     socket.on("joinGroup", async (data, ackFunc) => {
-      const room = await Room.findOne({
-        roomName: data.roomName,
-        passCode: data.passCode,
-      })
+      const room = await Room.findById(data.roomId)
         .populate({
           path: "chats",
           model: Chat,
@@ -32,16 +29,13 @@ const ioServer = (io) => {
         })
         .select("roomName chats usersAvailable isPrivate -_id")
 
-      if (room) {
-        ackFunc("Joining Room")
-      }
-
       if (!room) {
         ackFunc("Room Not Exist For You")
       }
 
       socket.join(room.roomName, (err) => {
-        if (err) callback(err)
+        if (err) ackFunc(err)
+        console.log("You Joined The room")
       })
 
       socket.broadcast.to(room.roomName).emit("notification", {
@@ -49,7 +43,7 @@ const ioServer = (io) => {
         type: "info",
       })
 
-      callback(null, room.chats)
+      ackFunc(null, room.chats)
     })
 
     socket.on("createGroup", async (data, ackFunc) => {
@@ -93,6 +87,36 @@ const ioServer = (io) => {
         if (err) ackFunc(err)
         ackFunc(true)
       })
+    })
+
+    socket.on("sendMsg", async (data) => {
+      try {
+        console.log(data)
+
+        const chat = await Chat({
+          message: data.text,
+          sender: data.userId,
+          timestamp: data.timestamp,
+        }).save()
+
+        await Room.findOneAndUpdate(
+          { roomName: data.roomName },
+          {
+            $push: {
+              chats: await chat._id,
+            },
+          }
+        ).then(() => console.log("chat added to room"))
+
+        io.to(data.roomName).emit("newMsg", {
+          id: chat._id,
+          text: data.text,
+          timestamp: data.timestamp,
+          sender: { username: data.username },
+        })
+      } catch (error) {
+        console.log(error)
+      }
     })
 
     const existingSocket = activeSockets.find(

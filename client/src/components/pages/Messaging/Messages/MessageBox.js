@@ -1,5 +1,6 @@
+import PropTypes from "prop-types"
+import { connect } from "react-redux"
 import React, { useState } from "react"
-// import PropTypes from "prop-types"
 
 import { makeStyles } from "@material-ui/core/styles"
 import SendRounded from "@material-ui/icons/SendRounded"
@@ -11,7 +12,6 @@ import {
   Typography,
 } from "@material-ui/core"
 import { deepPurple } from "@material-ui/core/colors"
-// import MessageItem from "./MessageItem"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,50 +52,47 @@ function MessageBox(props) {
     setMsgValue(e.target.value)
   }
 
-  const dummyData = [
-    {
-      message: "1: This should be in left",
-      direction: "left",
-    },
-    {
-      message:
-        "2: This should be in right This should be in right This should be in right This should be in right This should be in right",
-      direction: "right",
-    },
-    {
-      message:
-        "3: This should be in left again This should be in left again This should be in left again This should be in left again This should be in left again",
-      direction: "left",
-    },
-    {
-      message: "4: This should be in right again",
-      direction: "right",
-    },
-    {
-      message: "5: This should be in left again",
-      direction: "left",
-    },
-    {
-      message: "6: This should be in right again",
-      direction: "right",
-    },
-    {
-      message: "7: This should be in left again",
-      direction: "left",
-    },
-    {
-      message: "8: This should be in right again",
-      direction: "right",
-    },
-  ]
+  const sendMessage = (e) => {
+    e.preventDefault()
+    if (!msgValue) {
+      return
+    }
 
-  const chatBubbles = dummyData.map((obj, i = 0) => (
-    <div className={`${classes.bubbleContainer} ${obj.direction}`} key={i}>
-      <Paper key={i++} className={classes.bubble} elevation={3}>
-        <Typography>{obj.message}</Typography>
-      </Paper>
-    </div>
-  ))
+    var today = new Date()
+    var date = `${today.getMonth() + 1}/${today.getDate()}`
+    var time = `${today.getHours()}:${today.getMinutes()}`
+    var dateTime = `⏲ ${time} 📆 ${date}`
+
+    props.socket.emit("sendMsg", {
+      text: msgValue,
+      timestamp: dateTime,
+      userId: props.auth.user.id,
+      username: props.auth.user.username,
+      roomName: props.chat.currentRoom,
+    })
+  }
+
+  let chatBubbles
+
+  if (props.chat.chats.length > 0) {
+    chatBubbles = props.chat.chats.map((chat) =>
+      chat.sender.username === props.auth.user.username ? (
+        <div className={`${classes.bubbleContainer} right`} key={chat.id}>
+          <Paper className={classes.bubble} elevation={3}>
+            <Typography>{chat.message}</Typography>
+          </Paper>
+        </div>
+      ) : (
+        <div className={`${classes.bubbleContainer} left`} key={chat.id}>
+          <Paper className={classes.bubble} elevation={3}>
+            <Typography>{chat.message}</Typography>
+          </Paper>
+        </div>
+      )
+    )
+  } else {
+    chatBubbles = <h1>No Chats</h1>
+  }
 
   return (
     <div className={classes.root}>
@@ -110,32 +107,42 @@ function MessageBox(props) {
           {chatBubbles}
         </Grid>
         <Grid item>
-          <Grid container direction="row" justify="center">
-            <Grid item xs={11}>
-              <TextField
-                required
-                margin="dense"
-                name="aMsg"
-                value={msgValue}
-                onChange={handleChange}
-                label="Type your Message Here"
-                type="text"
-                variant="outlined"
-                fullWidth
-              />
+          <form onSubmit={sendMessage}>
+            <Grid container direction="row" justify="center">
+              <Grid item xs={11}>
+                <TextField
+                  required
+                  margin="dense"
+                  name="aMsg"
+                  value={msgValue}
+                  onChange={handleChange}
+                  label="Type your Message Here"
+                  type="text"
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={1}>
+                <IconButton type="submit">
+                  <SendRounded />
+                </IconButton>
+              </Grid>
             </Grid>
-            <Grid item xs={1}>
-              <IconButton>
-                <SendRounded />
-              </IconButton>
-            </Grid>
-          </Grid>
+          </form>
         </Grid>
       </Grid>
     </div>
   )
 }
 
-MessageBox.propTypes = {}
+MessageBox.propTypes = {
+  auth: PropTypes.object.isRequired,
+  chat: PropTypes.object.isRequired,
+}
 
-export default MessageBox
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  chat: state.chat,
+})
+
+export default connect(mapStateToProps, {})(MessageBox)

@@ -153,12 +153,12 @@ function MessagingHome(props) {
         <Grid item className={classes.contacts}>
           <Hidden only={["xs", "sm"]}>
             <List className={classes.list}>
-              <RoomBox userId={user.id} />
+              <RoomBox userId={user.id} socket={socket} />
             </List>
           </Hidden>
         </Grid>
         <Grid item className={classes.messages}>
-          <MessageBox />
+          <MessageBox socket={socket} />
         </Grid>
       </Grid>
       <ContactDialog

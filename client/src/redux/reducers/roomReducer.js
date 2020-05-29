@@ -16,7 +16,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        rooms: action.payload,
+        rooms: action.payload.reverse(),
       }
     default:
       return state
