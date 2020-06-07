@@ -46,6 +46,65 @@ const ioServer = (io) => {
       ackFunc(null, room.chats)
     })
 
+    socket.on("joinNewGroup", async (data, ackFunc) => {
+      const room =
+        data.roomName && data.passCode
+          ? await Room.findOne({
+              roomName: data.roomName,
+              passCode: data.passCode,
+            })
+              .populate({
+                path: "chats",
+                model: Chat,
+                select: "-updatedAt -__v",
+                options: { sort: { createdAt: -1 } },
+                populate: {
+                  path: "sender",
+                  model: Auth,
+                  select: "username -_id",
+                },
+              })
+              .select("roomName chats usersAvailable isPrivate _id")
+          : await Room.findOne({
+              roomName: data.roomName,
+            })
+              .populate({
+                path: "chats",
+                model: Chat,
+                select: "-updatedAt -__v",
+                options: { sort: { createdAt: -1 } },
+                populate: {
+                  path: "sender",
+                  model: Auth,
+                  select: "username -_id",
+                },
+              })
+              .select("roomName chats usersAvailable isPrivate _id")
+
+      if (!room) {
+        ackFunc("Room Not Exist For You")
+      }
+
+      socket.join(room.roomName, async (err) => {
+        if (err) ackFunc(err)
+
+        await Auth.findByIdAndUpdate(data.user_id, {
+          $push: { rooms: room._id },
+        })
+          .then(() => console.log("Room Added To Your Account"))
+          .catch((err) => ackFunc(err))
+
+        console.log("You Joined The room")
+      })
+
+      socket.broadcast.to(room.roomName).emit("notification", {
+        message: `${data.username} Joined!`,
+        type: "info",
+      })
+
+      ackFunc(null, room.chats)
+    })
+
     socket.on("createGroup", async (data, ackFunc) => {
       const { isPrivate, roomName, passCode, user_id } = data
       let newRoom

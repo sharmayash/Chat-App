@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core"
 
 function AddFormDialog(props) {
-  const { onClose, open, isAddNewContact, socket, userId } = props
+  const { onClose, open, isAddNewContact, socket, userId, joinORcreate } = props
   const [state, setState] = useState({
     roomName: "",
     passCode: "",
@@ -41,6 +41,23 @@ function AddFormDialog(props) {
     props.getRooms(userId)
   }
 
+  const handleJoin = (e) => {
+    e.preventDefault()
+
+    socket.emit(
+      "joinNewGroup",
+      {
+        isPrivate,
+        user_id: userId,
+        roomName: state.roomName,
+        passCode: state.passCode,
+      },
+      (ackdata) => console.log(ackdata)
+    )
+
+    props.getRooms(userId)
+  }
+
   const handleChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value })
   }
@@ -49,81 +66,139 @@ function AddFormDialog(props) {
     setPublic((prev) => !prev)
   }
 
-  formContent = isAddNewContact ? (
-    <>
-      <DialogTitle id="form-dialog-title">Add New Contact</DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          margin="dense"
-          name="username"
-          label="Search with Username"
-          type="text"
-          fullWidth
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={onClose} color="primary">
-          Add
-        </Button>
-      </DialogActions>
-    </>
-  ) : (
-    <form onSubmit={handleSubmit} noValidate autoComplete="off">
-      <DialogTitle id="form-dialog-title">Create A Group</DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          fullWidth
-          type="text"
-          margin="dense"
-          name="roomName"
-          label="Group Name"
-          value={state.rommName}
-          onChange={handleChange}
-        />
-        {isPrivate ? (
+  if (isAddNewContact && joinORcreate === null) {
+    formContent = (
+      <>
+        <DialogTitle id="form-dialog-title">Add New Contact</DialogTitle>
+        <DialogContent>
           <TextField
+            autoFocus
+            margin="dense"
+            name="username"
+            label="Search with Username"
+            type="text"
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={onClose} color="primary">
+            Add
+          </Button>
+        </DialogActions>
+      </>
+    )
+  } else if (isAddNewContact === false && joinORcreate === "join") {
+    formContent = (
+      <form onSubmit={handleJoin} noValidate autoComplete="off">
+        <DialogTitle id="form-dialog-title">Join A Group</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
             fullWidth
             type="text"
             margin="dense"
-            name="passCode"
-            label="Group PassCode"
-            value={state.passCode}
+            name="roomName"
+            label="Group Name"
+            value={state.rommName}
             onChange={handleChange}
           />
-        ) : null}
-        <FormControlLabel
-          value="start"
-          style={{ marginTop: "5%" }}
-          control={
-            <Switch
-              color="primary"
-              checked={isPrivate}
-              onChange={toggleSwitch}
+          {isPrivate ? (
+            <TextField
+              fullWidth
+              type="text"
+              margin="dense"
+              name="passCode"
+              label="Group PassCode"
+              value={state.passCode}
+              onChange={handleChange}
             />
-          }
-          label={
-            isPrivate
-              ? "Uncheck the switch for public group"
-              : "Check the switch for private group"
-          }
-          labelPlacement="start"
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Cancel
-        </Button>
-        <Button type="submit" onClick={onClose} color="primary">
-          Create
-        </Button>
-      </DialogActions>
-    </form>
-  )
+          ) : null}
+          <FormControlLabel
+            value="start"
+            style={{ marginTop: "5%" }}
+            control={
+              <Switch
+                color="primary"
+                checked={isPrivate}
+                onChange={toggleSwitch}
+              />
+            }
+            label={
+              isPrivate
+                ? "Uncheck the switch for public group"
+                : "Check the switch for private group"
+            }
+            labelPlacement="start"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="primary">
+            Cancel
+          </Button>
+          <Button type="submit" onClick={onClose} color="primary">
+            Join
+          </Button>
+        </DialogActions>
+      </form>
+    )
+  } else {
+    formContent = (
+      <form onSubmit={handleSubmit} noValidate autoComplete="off">
+        <DialogTitle id="form-dialog-title">Create A Group</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            fullWidth
+            type="text"
+            margin="dense"
+            name="roomName"
+            label="Group Name"
+            value={state.rommName}
+            onChange={handleChange}
+          />
+          {isPrivate ? (
+            <TextField
+              fullWidth
+              type="text"
+              margin="dense"
+              name="passCode"
+              label="Group PassCode"
+              value={state.passCode}
+              onChange={handleChange}
+            />
+          ) : null}
+          <FormControlLabel
+            value="start"
+            style={{ marginTop: "5%" }}
+            control={
+              <Switch
+                color="primary"
+                checked={isPrivate}
+                onChange={toggleSwitch}
+              />
+            }
+            label={
+              isPrivate
+                ? "Uncheck the switch for public group"
+                : "Check the switch for private group"
+            }
+            labelPlacement="start"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="primary">
+            Cancel
+          </Button>
+          <Button type="submit" onClick={onClose} color="primary">
+            Create
+          </Button>
+        </DialogActions>
+      </form>
+    )
+  }
 
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">

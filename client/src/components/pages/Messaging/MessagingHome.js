@@ -73,6 +73,7 @@ function MessagingHome(props) {
     openFormDialog: false,
     selectedRoom: "",
     isAddNewContact: true,
+    joinORcreate: null,
   })
 
   useEffect(() => {
@@ -90,11 +91,12 @@ function MessagingHome(props) {
     setState({ ...state, isDialogOpen: false, selectedRoom: value })
   }
 
-  const openFormFunc = (isOpenNewContact) => {
+  const openFormFunc = (isOpenNewContact, joinORcreate) => {
     setState({
       ...state,
       openFormDialog: true,
       isAddNewContact: isOpenNewContact,
+      joinORcreate: joinORcreate,
     })
   }
 
@@ -174,6 +176,7 @@ function MessagingHome(props) {
         userId={user.id}
         onClose={closeFormFunc}
         open={state.openFormDialog}
+        joinORcreate={state.joinORcreate}
         isAddNewContact={state.isAddNewContact}
       />
       <Menu
@@ -194,7 +197,7 @@ function MessagingHome(props) {
         <MenuItem
           onClick={() => {
             CloseMenu()
-            openFormFunc(true)
+            openFormFunc(true, null)
           }}
         >
           Add New Contact
@@ -202,7 +205,15 @@ function MessagingHome(props) {
         <MenuItem
           onClick={() => {
             CloseMenu()
-            openFormFunc(false)
+            openFormFunc(false, "join")
+          }}
+        >
+          Join Group
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            CloseMenu()
+            openFormFunc(false, "create")
           }}
         >
           Create A Group
