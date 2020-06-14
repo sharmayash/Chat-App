@@ -8,11 +8,12 @@ export default function ContactItem(props) {
   return (
     <>
       <ListItemAvatar>
-        <Avatar alt="Remy Sharp" src="icon.png" />
+        {/* <Avatar alt="Remy Sharp" src="icon.png" /> */}
+        <Avatar>{props.roomName[0]}</Avatar>
       </ListItemAvatar>
       <ListItemText
         primary={props.roomName}
-        secondary={" I'll be in your neighborhood doing errands this…"}
+        secondary={" I'll be in your neighborhood doing"}
       />
     </>
   )

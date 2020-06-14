@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { ListItem } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
 import { deepPurple } from "@material-ui/core/colors"
@@ -16,29 +16,38 @@ const useStyles = makeStyles(() => ({
     padding: "10px",
   },
   listItem: {
-    backgroundColor: "#fff",
+    backgroundColor: deepPurple[50],
     "&:hover": {
       background: deepPurple[100],
     },
     borderRadius: "10px",
     border: `1px solid ${deepPurple.A200}`,
   },
+  activeListItem: {
+    backgroundColor: "#fff",
+    "&:hover": {
+      background: deepPurple[100],
+    },
+    borderRadius: "10px",
+    borderLeft: `5px solid ${deepPurple.A200}`,
+  },
 }))
 
 export const RoomBox = (props) => {
   const classes = useStyles()
+  const [isSelected, selectIt] = useState(null)
 
   useEffect(() => {
     props.getRooms(props.userId)
     // eslint-disable-next-line
   }, [])
 
+  let roomList
   const { rooms, loading } = props.room
 
-  let roomList
-
   const joinRoom = (roomId, roomName) => {
-    console.log("Join Chat " + roomId)
+    selectIt(roomId)
+
     props.socket.emit(
       "joinGroup",
       {
@@ -59,7 +68,9 @@ export const RoomBox = (props) => {
           button
           onClick={() => joinRoom(room.id, room.roomName)}
           alignItems="flex-start"
-          className={classes.listItem}
+          className={
+            isSelected === room.id ? classes.listItem : classes.activeListItem
+          }
         >
           <ContactItem roomName={room.roomName} />
         </ListItem>

@@ -4,7 +4,6 @@ import { connect } from "react-redux"
 import socketIOClient from "socket.io-client"
 
 import { makeStyles } from "@material-ui/core/styles"
-import { deepPurple } from "@material-ui/core/colors"
 import AccountCircle from "@material-ui/icons/AccountCircle"
 import ContactsTwoTone from "@material-ui/icons/ContactsTwoTone"
 import AddCircleOutlineRounded from "@material-ui/icons/AddCircleOutlineRounded"
@@ -44,17 +43,12 @@ const useStyles = makeStyles((theme) => ({
   },
   list: {
     marginTop: "10px",
-    maxHeight: "85vh",
+    maxHeight: "80vh",
     overflow: "auto",
     "&::-webkit-scrollbar": {
       appearance: "none",
       height: 0,
     },
-  },
-  listItem: {
-    backgroundColor: "#fff",
-    borderRadius: "10px",
-    border: `1px solid ${deepPurple.A200}`,
   },
   contacts: {
     maxWidth: "45ch",
@@ -154,6 +148,7 @@ function MessagingHome(props) {
       >
         <Grid item className={classes.contacts}>
           <Hidden only={["xs", "sm"]}>
+            <Typography variant="subtitle2" style={{ marginLeft: "20px" }}>Chat Rooms</Typography>
             <List className={classes.list}>
               <RoomBox userId={user.id} socket={socket} />
             </List>

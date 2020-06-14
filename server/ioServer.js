@@ -150,8 +150,6 @@ const ioServer = (io) => {
 
     socket.on("sendMsg", async (data) => {
       try {
-        console.log(data)
-
         const chat = await Chat({
           message: data.text,
           sender: data.userId,
@@ -165,11 +163,12 @@ const ioServer = (io) => {
               chats: await chat._id,
             },
           }
-        ).then(() => console.log("chat added to room"))
-
+        ).then(() => {
+          console.log("chat added to room")
+        })
         io.to(data.roomName).emit("newMsg", {
           id: chat._id,
-          text: data.text,
+          message: data.text,
           timestamp: data.timestamp,
           sender: { username: data.username },
         })
