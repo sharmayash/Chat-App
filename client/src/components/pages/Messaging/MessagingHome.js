@@ -148,15 +148,22 @@ function MessagingHome(props) {
       >
         <Grid item className={classes.contacts}>
           <Hidden only={["xs", "sm"]}>
-            <Typography variant="subtitle2" style={{ marginLeft: "20px" }}>Chat Rooms</Typography>
+            <Typography
+              variant="subtitle2"
+              style={{ marginLeft: "20px", marginRight: "20px" }}
+            >
+              Chat Rooms
+            </Typography>
             <List className={classes.list}>
               <RoomBox userId={user.id} socket={socket} />
             </List>
           </Hidden>
         </Grid>
-        <Grid item className={classes.messages}>
-          <MessageBox socket={socket} />
-        </Grid>
+        {props.room.rooms.length > 0 ? (
+          <Grid item className={classes.messages}>
+            <MessageBox socket={socket} />
+          </Grid>
+        ) : null}
       </Grid>
       <ContactDialog
         selectedValue={state.selectedRoom}

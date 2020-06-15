@@ -59,8 +59,18 @@ export const RoomBox = (props) => {
     )
   }
 
-  if (rooms == null || loading) {
-    roomList = <h1>Loading ...</h1>
+  if (rooms.length === 0) {
+    roomList = (
+      <div className={classes.listDiv}>
+        <h5>Add a Contact or Add / Create a Group</h5>
+      </div>
+    )
+  } else if (loading) {
+    roomList = (
+      <div className={classes.listDiv}>
+        <h5>Please Wait! Loading your contacts / group</h5>
+      </div>
+    )
   } else {
     roomList = rooms.map((room) => (
       <div key={room.id} className={classes.listDiv}>
