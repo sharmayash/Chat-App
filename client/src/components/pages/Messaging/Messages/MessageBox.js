@@ -47,6 +47,7 @@ function MessageBox(props) {
   const classes = useStyles()
   const [msgValue, setMsgValue] = useState("")
   const { socket, newMsg, chat } = props
+  const { currentRoom } = chat
 
   const messagesEndRef = useRef(null)
   const scrollToBottom = () => {
@@ -57,11 +58,14 @@ function MessageBox(props) {
 
   useEffect(() => {
     if (socket) {
-      socket.on("newMsg", async (data) => {
-        await newMsg(chat.currentRoom, data)
+      socket.on("newMsg", (data) => {
+        newMsg(currentRoom, data)
       })
+      return () => {
+        socket.off("newMsg")
+      }
     }
-  }, [socket])
+  }, [socket, currentRoom, newMsg])
 
   const handleChange = (e) => {
     setMsgValue(e.target.value)
