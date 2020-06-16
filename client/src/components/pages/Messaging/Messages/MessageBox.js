@@ -5,13 +5,21 @@ import { makeStyles } from "@material-ui/core/styles"
 import { deepPurple } from "@material-ui/core/colors"
 import SendRounded from "@material-ui/icons/SendRounded"
 import { newMsg } from "../../../../redux/actions/chatActions"
+
+import VideoCallTwoTone from "@material-ui/icons/VideoCallTwoTone"
+
 import {
-  TextField,
   Grid,
-  IconButton,
   Paper,
+  Tooltip,
+  TextField,
+  IconButton,
   Typography,
 } from "@material-ui/core"
+
+import CloseIcon from "@material-ui/icons/Close"
+
+import { Slide, Button, Dialog, AppBar, Toolbar } from "@material-ui/core"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   chatBox: {
-    height: "74vh",
+    height: "70vh",
     overflow: "auto",
     "&::-webkit-scrollbar": {
       appearance: "none",
@@ -41,7 +49,19 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-block",
     borderRadius: "10px",
   },
+  appBar: {
+    position: "relative",
+    backgroundColor: "transparent",
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1,
+  },
 }))
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />
+})
 
 function MessageBox(props) {
   const classes = useStyles()
@@ -124,6 +144,15 @@ function MessageBox(props) {
       )
     )
   }
+  const [open, setOpen] = React.useState(false)
+
+  const handleClickOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
 
   return (
     <div className={classes.root}>
@@ -134,9 +163,18 @@ function MessageBox(props) {
         alignItems="stretch"
         spacing={2}
       >
-        <Grid item>
-          <Typography variant="subtitle2">{chat.currentRoom}</Typography>
-        </Grid>
+        {currentRoom ? (
+          <Grid item container direction="row">
+            <Grid item xs style={{ flexGrow: 1 }}>
+              <Typography variant="subtitle2">{currentRoom}</Typography>
+            </Grid>
+            <Tooltip title="Video Chat">
+              <IconButton color="inherit" onClick={handleClickOpen}>
+                <VideoCallTwoTone />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        ) : null}
         <Grid item className={classes.chatBox}>
           {chatBubbles}
           <div ref={messagesEndRef} />
@@ -166,6 +204,40 @@ function MessageBox(props) {
           </form>
         </Grid>
       </Grid>
+      <Dialog
+        fullScreen
+        open={open}
+        PaperProps={{
+          style: {
+            opacity: "0.8",
+            backgroundColor: "black",
+            color: "white",
+            boxShadow: "none",
+          },
+        }}
+        onClose={handleClose}
+        TransitionComponent={Transition}
+      >
+        <AppBar elevation={0} className={classes.appBar}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={handleClose}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h6" className={classes.title}>
+              Video Chat
+            </Typography>
+            <Button autoFocus color="inherit" onClick={handleClose}>
+              save
+            </Button>
+          </Toolbar>
+        </AppBar>
+        <h1>Video Chat</h1>
+      </Dialog>
     </div>
   )
 }
