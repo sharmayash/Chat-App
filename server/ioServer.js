@@ -128,18 +128,17 @@ const ioServer = (io) => {
 
       const room = await new Room(newRoom)
 
-      await Auth.findOneAndUpdate({
-        id: user_id,
+      await Auth.findByIdAndUpdate(user_id, {
         $push: { rooms: room._id },
       })
-        .then(() => ackFunc("Room Added To Your Account"))
+        .then(() => console.log("Room Added To Your Account Id "))
         .catch((err) =>
           ackFunc(`Error Occured while adding Room to your account ${err}`)
         )
 
       room
         .save()
-        .then(() => ackFunc("Room Created"))
+        .then(() => console.log("Room Created"))
         .catch((err) => ackFunc("Error In Creating Room"))
 
       socket.join(roomName, (err) => {
