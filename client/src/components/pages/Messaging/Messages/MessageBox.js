@@ -100,9 +100,9 @@ function MessageBox(props) {
   } else if (chat.chats.length === 0) {
     chatBubbles = <h5>No Chats in this Room</h5>
   } else if (chat.chats.length > 0) {
-    chatBubbles = chat.chats.map((chat) =>
+    chatBubbles = chat.chats.map((chat, i) =>
       chat.sender.username === props.auth.user.username ? (
-        <div key={chat._id} className={`${classes.bubbleContainer} right`}>
+        <div key={i} className={`${classes.bubbleContainer} right`}>
           <Paper
             className={classes.bubble}
             elevation={3}
@@ -112,7 +112,7 @@ function MessageBox(props) {
           </Paper>
         </div>
       ) : (
-        <div key={chat._id} className={`${classes.bubbleContainer} left`}>
+        <div key={i} className={`${classes.bubbleContainer} left`}>
           <Paper
             className={classes.bubble}
             elevation={3}
