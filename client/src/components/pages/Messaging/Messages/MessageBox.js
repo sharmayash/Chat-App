@@ -90,18 +90,23 @@ function MessageBox(props) {
     }
   }, [socket, currentRoom, newMsg])
 
-  // For Notification
+  // For new user joined Notification
 
   useEffect(() => {
     if (socket) {
       socket.on("notification", (data) => {
-        enqueueSnackbar(data.message, { variant: data.type })
+        enqueueSnackbar(data.message, {
+          variant: data.type,
+          preventDuplicate: true,
+        })
       })
       return () => {
         socket.off("notification")
       }
     }
   }, [socket, enqueueSnackbar])
+
+  // For sending Messages
 
   const handleChange = (e) => {
     setMsgValue(e.target.value)

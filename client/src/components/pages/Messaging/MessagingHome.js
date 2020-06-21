@@ -166,7 +166,7 @@ function MessagingHome(props) {
         </Grid>
         {props.room.rooms.length > 0 ? (
           <Grid item className={classes.messages}>
-            <SnackbarProvider maxSnack={3}>
+            <SnackbarProvider maxSnack={3} dense preventDuplicate>
               <MessageBox socket={socket} />
             </SnackbarProvider>
           </Grid>

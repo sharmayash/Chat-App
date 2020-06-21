@@ -1,7 +1,6 @@
 import React from "react"
 import jwt_decode from "jwt-decode"
 import { Provider } from "react-redux"
-import { blueGrey } from "@material-ui/core/colors"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
 
 // Importing app files
@@ -40,20 +39,12 @@ function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <div
-          style={{
-            flexGrow: 1,
-            height: "100vh",
-            backgroundColor: blueGrey[100],
-          }}
-        >
-          <Switch>
-            <Route>
-              <Route exact path="/" component={Dashboard} />
-              <Route path="/signup" component={Signup} />
-            </Route>
-          </Switch>
-        </div>
+        <Switch>
+          <Route>
+            <Route exact path="/" component={Dashboard} />
+            <Route path="/signup" component={Signup} />
+          </Route>
+        </Switch>
       </BrowserRouter>
     </Provider>
   )

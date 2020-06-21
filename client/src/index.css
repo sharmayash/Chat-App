@@ -16,11 +16,7 @@ html,
 body,
 #root {
   height: 100%;
-}
-.App {
-  display: flex;
-  height: 100%;
-  flex-direction: column-reverse;
+  background-color: #cfd8dc;
 }
 .right {
   justify-content: flex-end !important;
