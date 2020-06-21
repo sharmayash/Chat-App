@@ -1,12 +1,8 @@
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { useSnackbar } from "notistack"
 import React, { useEffect, useState, useRef } from "react"
-import { makeStyles } from "@material-ui/core/styles"
-import { deepPurple } from "@material-ui/core/colors"
-import SendRounded from "@material-ui/icons/SendRounded"
 import { newMsg } from "../../../../redux/actions/chatActions"
-
-import VideoCallTwoTone from "@material-ui/icons/VideoCallTwoTone"
 
 import {
   Grid,
@@ -16,10 +12,12 @@ import {
   IconButton,
   Typography,
 } from "@material-ui/core"
+import { makeStyles } from "@material-ui/core/styles"
+import { deepPurple } from "@material-ui/core/colors"
+import SendRounded from "@material-ui/icons/SendRounded"
+import VideoCallTwoTone from "@material-ui/icons/VideoCallTwoTone"
 
-import CloseIcon from "@material-ui/icons/Close"
-
-import { Slide, Button, Dialog, AppBar, Toolbar } from "@material-ui/core"
+import { VideoDialog } from "../video/VideoDialog"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,25 +47,28 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-block",
     borderRadius: "10px",
   },
-  appBar: {
-    position: "relative",
-    backgroundColor: "transparent",
-  },
-  title: {
-    marginLeft: theme.spacing(2),
-    flex: 1,
-  },
 }))
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />
-})
 
 function MessageBox(props) {
   const classes = useStyles()
+  const { enqueueSnackbar } = useSnackbar()
   const [msgValue, setMsgValue] = useState("")
   const { socket, newMsg, chat } = props
   const { currentRoom } = chat
+
+  // For video dialog
+
+  const [open, setOpen] = React.useState(false)
+
+  const handleClickOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  // For scrolling to most recent message
 
   const messagesEndRef = useRef(null)
   const scrollToBottom = () => {
@@ -75,6 +76,8 @@ function MessageBox(props) {
   }
 
   useEffect(scrollToBottom, [chat.chats])
+
+  // For Receiveing new Msg.
 
   useEffect(() => {
     if (socket) {
@@ -86,6 +89,19 @@ function MessageBox(props) {
       }
     }
   }, [socket, currentRoom, newMsg])
+
+  // For Notification
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("notification", (data) => {
+        enqueueSnackbar(data.message, { variant: data.type })
+      })
+      return () => {
+        socket.off("notification")
+      }
+    }
+  }, [socket, enqueueSnackbar])
 
   const handleChange = (e) => {
     setMsgValue(e.target.value)
@@ -144,15 +160,6 @@ function MessageBox(props) {
       )
     )
   }
-  const [open, setOpen] = React.useState(false)
-
-  const handleClickOpen = () => {
-    setOpen(true)
-  }
-
-  const handleClose = () => {
-    setOpen(false)
-  }
 
   return (
     <div className={classes.root}>
@@ -204,40 +211,7 @@ function MessageBox(props) {
           </form>
         </Grid>
       </Grid>
-      <Dialog
-        fullScreen
-        open={open}
-        PaperProps={{
-          style: {
-            opacity: "0.8",
-            backgroundColor: "black",
-            color: "white",
-            boxShadow: "none",
-          },
-        }}
-        onClose={handleClose}
-        TransitionComponent={Transition}
-      >
-        <AppBar elevation={0} className={classes.appBar}>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={handleClose}
-              aria-label="close"
-            >
-              <CloseIcon />
-            </IconButton>
-            <Typography variant="h6" className={classes.title}>
-              Video Chat
-            </Typography>
-            <Button autoFocus color="inherit" onClick={handleClose}>
-              save
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <h1>Video Chat</h1>
-      </Dialog>
+      <VideoDialog isOpen={open} handleClose={handleClose} />
     </div>
   )
 }

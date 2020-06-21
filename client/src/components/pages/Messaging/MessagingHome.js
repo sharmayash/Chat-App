@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import socketIOClient from "socket.io-client"
+import { SnackbarProvider } from "notistack"
 
 import { makeStyles } from "@material-ui/core/styles"
 import AccountCircle from "@material-ui/icons/AccountCircle"
@@ -155,13 +156,19 @@ function MessagingHome(props) {
               Chat Rooms
             </Typography>
             <List className={classes.list}>
-              <RoomBox userId={user.id} socket={socket} />
+              <RoomBox
+                userId={user.id}
+                username={user.username}
+                socket={socket}
+              />
             </List>
           </Hidden>
         </Grid>
         {props.room.rooms.length > 0 ? (
           <Grid item className={classes.messages}>
-            <MessageBox socket={socket} />
+            <SnackbarProvider maxSnack={3}>
+              <MessageBox socket={socket} />
+            </SnackbarProvider>
           </Grid>
         ) : null}
       </Grid>
@@ -176,6 +183,7 @@ function MessagingHome(props) {
       <AddFormDialog
         socket={socket}
         userId={user.id}
+        username={user.username}
         onClose={closeFormFunc}
         open={state.openFormDialog}
         joinORcreate={state.joinORcreate}

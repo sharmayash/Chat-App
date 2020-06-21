@@ -15,7 +15,15 @@ import {
 } from "@material-ui/core"
 
 function AddFormDialog(props) {
-  const { onClose, open, isAddNewContact, socket, userId, joinORcreate } = props
+  const {
+    onClose,
+    open,
+    isAddNewContact,
+    socket,
+    userId,
+    username,
+    joinORcreate,
+  } = props
   const [state, setState] = useState({
     roomName: "",
     passCode: "",
@@ -48,6 +56,7 @@ function AddFormDialog(props) {
       "joinNewGroup",
       {
         isPrivate,
+        username,
         user_id: userId,
         roomName: state.roomName,
         passCode: state.passCode,

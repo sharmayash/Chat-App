@@ -52,6 +52,7 @@ export const RoomBox = (props) => {
       "joinGroup",
       {
         roomId,
+        username: props.username,
       },
       (err, chats) => {
         !err ? props.setChats(roomName, chats) : props.chatsError(err)
