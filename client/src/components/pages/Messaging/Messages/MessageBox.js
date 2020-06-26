@@ -17,7 +17,7 @@ import { deepPurple } from "@material-ui/core/colors"
 import SendRounded from "@material-ui/icons/SendRounded"
 import VideoCallTwoTone from "@material-ui/icons/VideoCallTwoTone"
 
-import { VideoDialog } from "../video/VideoDialog"
+// import { VideoDialog } from "../video/VideoDialog"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,15 +58,15 @@ function MessageBox(props) {
 
   // For video dialog
 
-  const [open, setOpen] = React.useState(false)
+  // const [open, setOpen] = React.useState(false)
 
-  const handleClickOpen = () => {
-    setOpen(true)
-  }
+  // const handleClickOpen = () => {
+  //   setOpen(true)
+  // }
 
-  const handleClose = () => {
-    setOpen(false)
-  }
+  // const handleClose = () => {
+  //   setOpen(false)
+  // }
 
   // For scrolling to most recent message
 
@@ -181,7 +181,12 @@ function MessageBox(props) {
               <Typography variant="subtitle2">{currentRoom}</Typography>
             </Grid>
             <Tooltip title="Video Chat">
-              <IconButton color="inherit" onClick={handleClickOpen}>
+              <IconButton
+                color="inherit"
+                onClick={() => {
+                  // handleClickOpen
+                }}
+              >
                 <VideoCallTwoTone />
               </IconButton>
             </Tooltip>
@@ -216,7 +221,13 @@ function MessageBox(props) {
           </form>
         </Grid>
       </Grid>
-      <VideoDialog isOpen={open} handleClose={handleClose} />
+      {/* <VideoDialog
+        isOpen={open}
+        socket={socket}
+        roomName={currentRoom}
+        handleClose={handleClose}
+        username={props.auth.user.username}
+      /> */}
     </div>
   )
 }
