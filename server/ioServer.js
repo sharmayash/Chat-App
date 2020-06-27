@@ -8,12 +8,6 @@ const ioServer = (io) => {
   io.on("connection", (socket) => {
     console.log(`Socket connected ${socket.id}`)
 
-    socket.on("test", (data, ackFunc) => {
-      console.log(data)
-      ackFunc("Ack. Func Data")
-      socket.emit("fromServer", `Message From Server with event`) // another event
-    })
-
     socket.on("joinGroup", async (data, ackFunc) => {
       const room = await Room.findById(data.roomId)
         .populate({
@@ -149,8 +143,6 @@ const ioServer = (io) => {
 
     socket.on("sendMsg", async (data) => {
       try {
-        console.log("Msg received on server " + data.text)
-
         const chat = await Chat({
           message: data.text,
           sender: data.userId,
@@ -175,6 +167,21 @@ const ioServer = (io) => {
       } catch (error) {
         console.log(error)
       }
+    })
+
+    socket.on("addContact", async (data, ackFunc) => {
+      const { contactName, userId } = data
+
+      await Auth.findOneAndUpdate(
+        { username: contactName },
+        {
+          $addToSet: { contactRequests: userId }, // add senders userid to requests of receiver
+        }
+      )
+        .then((contact) => {
+          ackFunc(`Your Request Sent to ${contact.username}`)
+        })
+        .catch((err) => ackFunc(err))
     })
 
     // const existingSocket = activeSockets.find(

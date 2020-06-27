@@ -13,6 +13,18 @@ const AuthSchema = new mongoose.Schema(
         ref: "room",
       },
     ],
+    contacts: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "contact",
+      },
+    ],
+    contactRequests: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "auth",
+      },
+    ],
   },
   {
     timestamps: true,

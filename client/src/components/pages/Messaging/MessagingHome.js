@@ -66,7 +66,6 @@ function MessagingHome(props) {
     MenuEleTxt: null,
     isDialogOpen: false,
     openFormDialog: false,
-    selectedRoom: "",
     isAddNewContact: true,
     joinORcreate: null,
   })
@@ -76,14 +75,13 @@ function MessagingHome(props) {
   }, [])
 
   const { user } = props.auth
-  const usersList = ["user1"]
 
   const openContactFunc = () => {
     setState({ ...state, isDialogOpen: true })
   }
 
   const closeContactFunc = (value) => {
-    setState({ ...state, isDialogOpen: false, selectedRoom: value })
+    setState({ ...state, isDialogOpen: false })
   }
 
   const openFormFunc = (isOpenNewContact, joinORcreate) => {
@@ -114,7 +112,7 @@ function MessagingHome(props) {
           <Grid container spacing={2}>
             <Grid item xs={9} sm={10} md={11} className={classes.tool}>
               <Typography className={classes.title} variant="h6" noWrap>
-                {state.selectedRoom}
+                Messaging
               </Typography>
             </Grid>
             <Grid item xs={3} sm={2} md={1} className={classes.tool}>
@@ -173,12 +171,11 @@ function MessagingHome(props) {
         ) : null}
       </Grid>
       <ContactDialog
-        selectedValue={state.selectedRoom}
+        socket={socket}
+        userId={user.id}
+        openForm={openFormFunc}
         open={state.isDialogOpen}
         onClose={closeContactFunc}
-        usersList={usersList}
-        socket={socket}
-        openForm={openFormFunc}
       />
       <AddFormDialog
         socket={socket}

@@ -27,6 +27,7 @@ function AddFormDialog(props) {
   const [state, setState] = useState({
     roomName: "",
     passCode: "",
+    usernameToSearch: "",
   })
   const [isPrivate, setPublic] = useState(true)
 
@@ -75,17 +76,32 @@ function AddFormDialog(props) {
     setPublic((prev) => !prev)
   }
 
+  const handleContact = (e) => {
+    e.preventDefault()
+
+    socket.emit(
+      "addContact",
+      {
+        userId,
+        contactName: state.usernameToSearch,
+      },
+      (ackdata) => console.log(ackdata)
+    )
+  }
+
   if (isAddNewContact && joinORcreate === null) {
     formContent = (
-      <>
+      <form onSubmit={handleContact} noValidate autoComplete="off">
         <DialogTitle id="form-dialog-title">Add New Contact</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
-            name="username"
+            name="usernameToSearch"
             label="Search with Username"
             type="text"
+            value={state.usernameToSearch}
+            onChange={handleChange}
             fullWidth
           />
         </DialogContent>
@@ -93,11 +109,11 @@ function AddFormDialog(props) {
           <Button onClick={onClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={onClose} color="primary">
+          <Button type="submit" onClick={onClose} color="primary">
             Add
           </Button>
         </DialogActions>
-      </>
+      </form>
     )
   } else if (isAddNewContact === false && joinORcreate === "join") {
     formContent = (
