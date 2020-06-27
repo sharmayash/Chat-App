@@ -110,7 +110,7 @@ function AddFormDialog(props) {
             Cancel
           </Button>
           <Button type="submit" onClick={onClose} color="primary">
-            Add
+            Send Request
           </Button>
         </DialogActions>
       </form>

@@ -40,12 +40,19 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     //check style.css for left and right classnaeme based on your data
   },
-  bubble: {
+  bubbleLeft: {
     margin: "5px",
-    padding: "10px",
+    padding: "20px",
     maxWidth: "40ch",
     display: "inline-block",
-    borderRadius: "10px",
+    borderRadius: "50px 50px 50px 5px",
+  },
+  bubbleRight: {
+    margin: "5px",
+    padding: "20px",
+    maxWidth: "40ch",
+    display: "inline-block",
+    borderRadius: "50px 5px 50px 50px",
   },
 }))
 
@@ -145,7 +152,7 @@ function MessageBox(props) {
       chat.sender.username === props.auth.user.username ? (
         <div key={i} className={`${classes.bubbleContainer} right`}>
           <Paper
-            className={classes.bubble}
+            className={classes.bubbleRight}
             elevation={3}
             style={{ backgroundColor: "#dcedc8" }}
           >
@@ -155,7 +162,7 @@ function MessageBox(props) {
       ) : (
         <div key={i} className={`${classes.bubbleContainer} left`}>
           <Paper
-            className={classes.bubble}
+            className={classes.bubbleLeft}
             elevation={3}
             style={{ backgroundColor: deepPurple[200] }}
           >
