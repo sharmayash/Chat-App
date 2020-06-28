@@ -1,6 +1,6 @@
 import axios from "axios"
 import jwt_decode from "jwt-decode"
-import { ERRORS, SET_CURRENT_USER } from "./types"
+import { ERRORS, SET_CURRENT_USER, GET_CONTACT_REQUESTS } from "./types"
 import setTokenOnAllRoutes from "../../utils/setTokenOnAllRoutes"
 
 export const signup = (name, email, username, password, cPassword, history) => (
@@ -111,4 +111,39 @@ export const logOutUser = () => (dispatch) => {
   setTokenOnAllRoutes(false)
   //set current user to empty object {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}))
+}
+
+export const getContactRequests = (userID) => (dispatch) => {
+  const reqBody = {
+    query: `
+      query {
+        getContactRequests(userId: "${userID}") {
+          username
+        }
+      }
+    `,
+  }
+
+  axios
+    .post("/graphql", reqBody)
+    .then((res) => {
+      if (res.data.data.getContactRequests) {
+        dispatch({
+          type: GET_CONTACT_REQUESTS,
+          payload: res.data.data.getContactRequests,
+        })
+      }
+      if (res.data.errors) {
+        dispatch({
+          type: ERRORS,
+          payload: res.data.errors[0].message,
+        })
+      }
+    })
+    .catch((err) => {
+      dispatch({
+        type: ERRORS,
+        payload: err,
+      })
+    })
 }

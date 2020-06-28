@@ -8,6 +8,7 @@ module.exports = new GraphQLObjectType({
   name: "RootQueryType",
   fields: {
     signIn: authQueries.signInUser,
+    getContactRequests: authQueries.getContactRequests,
     getRooms: roomQueries.getRooms,
   },
 })

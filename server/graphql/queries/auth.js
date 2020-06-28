@@ -1,10 +1,11 @@
 const bcrypt = require("bcryptjs")
-const { GraphQLString } = require("graphql")
+const { GraphQLString, GraphQLID, GraphQLList } = require("graphql")
 
 const Auth = require("../../models/auth")
 const AuthType = require("../types/AuthType")
 const createNewToken = require("../../config/signtoken")
 const validateLogIn = require("../../validation/LogInValidation")
+const ContactRequests = require("../types/ContactRequests")
 
 signInUser = {
   type: AuthType,
@@ -38,4 +39,24 @@ signInUser = {
   },
 }
 
-module.exports = { signInUser }
+getContactRequests = {
+  type: new GraphQLList(ContactRequests),
+  args: {
+    userId: { type: GraphQLString },
+  },
+  async resolve(parent, { userId }) {
+    try {
+      const user = await Auth.findById(userId).populate({
+        path: "contactRequests",
+        model: Auth,
+        select: "username _id",
+      })
+
+      return user.contactRequests
+    } catch (error) {
+      return error
+    }
+  },
+}
+
+module.exports = { signInUser, getContactRequests }

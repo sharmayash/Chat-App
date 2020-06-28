@@ -1,9 +1,10 @@
 import isEmpty from "../../validation/isEmpty"
-import { SET_CURRENT_USER } from "../actions/types"
+import { SET_CURRENT_USER, GET_CONTACT_REQUESTS } from "../actions/types"
 
 const initialState = {
   isAuthenticated: false,
   user: {},
+  contactRequests: [],
 }
 
 export default (state = initialState, action) => {
@@ -13,6 +14,11 @@ export default (state = initialState, action) => {
         ...state,
         isAuthenticated: !isEmpty(action.payload),
         user: action.payload,
+      }
+    case GET_CONTACT_REQUESTS:
+      return {
+        ...state,
+        contactRequests: action.payload,
       }
     default:
       return state

@@ -3,11 +3,13 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import socketIOClient from "socket.io-client"
 import { SnackbarProvider } from "notistack"
+import { getContactRequests } from "../../../redux/actions/authActions"
 
 import { makeStyles } from "@material-ui/core/styles"
 import AccountCircle from "@material-ui/icons/AccountCircle"
 import ContactsTwoTone from "@material-ui/icons/ContactsTwoTone"
 import AddCircleOutlineRounded from "@material-ui/icons/AddCircleOutlineRounded"
+import NotificationImportantRounded from "@material-ui/icons/NotificationImportantRounded"
 
 import {
   Grid,
@@ -20,15 +22,17 @@ import {
   MenuItem,
   Typography,
   IconButton,
+  Popover,
 } from "@material-ui/core"
 
-import ContactDialog from "./contacts/ContactDialog"
-import AddFormDialog from "./contacts/AddFormDialog"
-import MessageBox from "./Messages/MessageBox"
 import RoomBox from "./contacts/RoomBox"
+import MessageBox from "./Messages/MessageBox"
+import AddFormDialog from "./contacts/AddFormDialog"
+import ContactDialog from "./contacts/ContactDialog"
+import { NotificationPop } from "../../common/NotificationPop"
 
 const useStyles = makeStyles((theme) => ({
-  grow: {
+  growHome: {
     flexGrow: 1,
     height: "100vh",
     padding: theme.spacing(3),
@@ -37,10 +41,6 @@ const useStyles = makeStyles((theme) => ({
     color: "black",
     background: "transparent",
     boxShadow: "none",
-  },
-  tool: {
-    display: "flex",
-    alignItems: "center",
   },
   list: {
     marginTop: "10px",
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   contacts: {
     maxWidth: "45ch",
   },
-  messages: {
+  grow: {
     flexGrow: 1,
   },
 }))
@@ -63,6 +63,7 @@ function MessagingHome(props) {
   const classes = useStyles()
   const [socket, setSocket] = useState(null)
   const [state, setState] = useState({
+    anchorEl: null,
     MenuEleTxt: null,
     isDialogOpen: false,
     openFormDialog: false,
@@ -74,7 +75,17 @@ function MessagingHome(props) {
     setSocket(socketIOClient.connect("http://localhost:4000"))
   }, [])
 
-  const { user } = props.auth
+  const { user, contactRequests } = props.auth
+  const open = Boolean(state.anchorEl)
+  const id = open ? "simple-popover" : undefined
+
+  const handlePopOver = (event) => {
+    setState({ ...state, anchorEl: event.currentTarget })
+  }
+
+  const closePopOver = () => {
+    setState({ ...state, anchorEl: null })
+  }
 
   const openContactFunc = () => {
     setState({ ...state, isDialogOpen: true })
@@ -106,16 +117,16 @@ function MessagingHome(props) {
   }
 
   return (
-    <main className={classes.grow}>
+    <main className={classes.growHome}>
       <AppBar position="static" className={classes.appBar}>
         <Toolbar variant="dense">
           <Grid container spacing={2}>
-            <Grid item xs={9} sm={10} md={11} className={classes.tool}>
+            <Grid item className={classes.grow}>
               <Typography className={classes.title} variant="h6" noWrap>
                 Messaging
               </Typography>
             </Grid>
-            <Grid item xs={3} sm={2} md={1} className={classes.tool}>
+            <Grid item>
               <Hidden only={["md", "lg", "xl"]}>
                 <Tooltip title="Contacts">
                   <IconButton color="inherit" onClick={openContactFunc}>
@@ -130,6 +141,15 @@ function MessagingHome(props) {
                   </IconButton>
                 </Tooltip>
               </Hidden>
+              <Tooltip title="Notifications">
+                <IconButton
+                  aria-describedby={id}
+                  color="inherit"
+                  onClick={handlePopOver}
+                >
+                  <NotificationImportantRounded />
+                </IconButton>
+              </Tooltip>
               <Tooltip title="Your Profile">
                 <IconButton color="inherit">
                   <AccountCircle />
@@ -163,7 +183,7 @@ function MessagingHome(props) {
           </Hidden>
         </Grid>
         {props.room.rooms.length > 0 ? (
-          <Grid item className={classes.messages}>
+          <Grid item className={classes.grow}>
             <SnackbarProvider maxSnack={3} dense preventDuplicate>
               <MessageBox socket={socket} />
             </SnackbarProvider>
@@ -226,6 +246,26 @@ function MessagingHome(props) {
           Create A Group
         </MenuItem>
       </Menu>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={state.anchorEl}
+        onClose={closePopOver}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <NotificationPop
+          userId={user.id}
+          getContactRequests={props.getContactRequests}
+          contactRequests={contactRequests}
+        />
+      </Popover>
     </main>
   )
 }
@@ -233,6 +273,7 @@ function MessagingHome(props) {
 MessagingHome.propTypes = {
   auth: PropTypes.object.isRequired,
   room: PropTypes.object.isRequired,
+  getContactRequests: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
@@ -240,4 +281,6 @@ const mapStateToProps = (state) => ({
   room: state.room,
 })
 
-export default connect(mapStateToProps)(MessagingHome)
+const mapDispatchToProps = { getContactRequests }
+
+export default connect(mapStateToProps, mapDispatchToProps)(MessagingHome)
