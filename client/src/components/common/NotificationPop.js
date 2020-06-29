@@ -25,6 +25,7 @@ export const NotificationPop = ({
   userId,
   contactRequests,
   getContactRequests,
+  deleteContactRequest,
 }) => {
   const classes = useStyles()
   const [requests, setrequests] = useState([])
@@ -38,21 +39,35 @@ export const NotificationPop = ({
     setrequests(contactRequests)
   }, [contactRequests])
 
+  const deleteRequest = (cReqId) => {
+    deleteContactRequest(userId, cReqId)
+  }
+
+  const acceptRequest = (cReqId) => {
+    console.log("Accepting " + cReqId)
+  }
+
   return (
     <List dense className={classes.root}>
       <ListSubheader>Contact Requests</ListSubheader>
       {requests.map((item) => {
         return (
-          <ListItem key={item} button>
+          <ListItem key={item.id} button>
             <ListItemAvatar>
               <Avatar>{item.username[0]}</Avatar>
             </ListItemAvatar>
             <ListItemText primary={item.username} />
             <ListItemSecondaryAction>
-              <IconButton color="secondary">
+              <IconButton
+                color="secondary"
+                onClick={() => deleteRequest(item.id)}
+              >
                 <DeleteIcon />
               </IconButton>
-              <IconButton color="primary">
+              <IconButton
+                color="primary"
+                onClick={() => acceptRequest(item.id)}
+              >
                 <Check />
               </IconButton>
             </ListItemSecondaryAction>

@@ -1,10 +1,13 @@
 const bcrypt = require("bcryptjs")
-const { GraphQLString, GraphQLNonNull } = require("graphql")
+const { GraphQLString, GraphQLNonNull, GraphQLList } = require("graphql")
 
 const Auth = require("../../models/auth")
+const Contact = require("../../models/Contact")
 const AuthType = require("../types/AuthType")
 const createNewToken = require("../../config/signtoken")
 const validateSignUp = require("../../validation/SignUpValidation")
+const ContactRequests = require("../types/ContactRequests")
+const ContactInfo = require("../types/ContactInfo")
 
 createUser = {
   type: AuthType,
@@ -65,6 +68,71 @@ createUser = {
   },
 }
 
+acceptContactRequest = {
+  type: ContactInfo,
+  args: {
+    userId: { type: GraphQLString },
+    cReqId: { type: GraphQLString },
+  },
+  async resolve(parent, { userId, cReqId }) {
+    try {
+      const user = await Auth.findByIdAndUpdate(
+        userId,
+        {
+          $addToSet: { contacts: cReqId },
+          $pull: { contactRequests: cReqId },
+        },
+        { safe: true, upsert: true },
+        (err, _) => {
+          if (err) return err
+          console.log("Contact Request Accepted")
+        }
+      ).populate({
+        path: "contacts",
+        model: Contact,
+        select: "contactName _id",
+      })
+
+      return { contacts: user.contacts, contactReq: user.contactRequests }
+    } catch (error) {
+      return error
+    }
+  },
+}
+
+deleteContactRequest = {
+  type: new GraphQLList(ContactRequests),
+  args: {
+    userId: { type: GraphQLString },
+    cReqId: { type: GraphQLString },
+  },
+  async resolve(parent, { userId, cReqId }) {
+    try {
+      const user = await Auth.findByIdAndUpdate(
+        userId,
+        {
+          $pull: { contactRequests: cReqId },
+        },
+        { safe: true, upsert: true },
+        (err, _) => {
+          if (err) return err
+          console.log("Contact Updated")
+        }
+      ).populate({
+        path: "contactRequests",
+        model: Auth,
+        select: "username _id",
+      })
+
+      return user.contactRequests
+    } catch (error) {
+      return error
+    }
+  },
+}
+
 module.exports = {
   createUser,
+  acceptContactRequest,
+  deleteContactRequest,
 }

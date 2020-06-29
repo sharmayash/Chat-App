@@ -3,7 +3,10 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import socketIOClient from "socket.io-client"
 import { SnackbarProvider } from "notistack"
-import { getContactRequests } from "../../../redux/actions/authActions"
+import {
+  getContactRequests,
+  deleteContactRequest,
+} from "../../../redux/actions/authActions"
 
 import { makeStyles } from "@material-ui/core/styles"
 import AccountCircle from "@material-ui/icons/AccountCircle"
@@ -263,6 +266,7 @@ function MessagingHome(props) {
         <NotificationPop
           userId={user.id}
           getContactRequests={props.getContactRequests}
+          deleteContactRequest={props.deleteContactRequest}
           contactRequests={contactRequests}
         />
       </Popover>
@@ -274,6 +278,7 @@ MessagingHome.propTypes = {
   auth: PropTypes.object.isRequired,
   room: PropTypes.object.isRequired,
   getContactRequests: PropTypes.func.isRequired,
+  deleteContactRequest: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
@@ -281,6 +286,6 @@ const mapStateToProps = (state) => ({
   room: state.room,
 })
 
-const mapDispatchToProps = { getContactRequests }
+const mapDispatchToProps = { getContactRequests, deleteContactRequest }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MessagingHome)

@@ -118,6 +118,7 @@ export const getContactRequests = (userID) => (dispatch) => {
     query: `
       query {
         getContactRequests(userId: "${userID}") {
+          id
           username
         }
       }
@@ -137,6 +138,42 @@ export const getContactRequests = (userID) => (dispatch) => {
         dispatch({
           type: ERRORS,
           payload: res.data.errors[0].message,
+        })
+      }
+    })
+    .catch((err) => {
+      dispatch({
+        type: ERRORS,
+        payload: err,
+      })
+    })
+}
+
+export const deleteContactRequest = (userID, cReqId) => (dispatch) => {
+  const reqBody = {
+    query: `
+      mutation {
+        deleteContactRequest(userId: "${userID}", cReqId: "${cReqId}") {
+          id
+          username
+        }
+      }
+    `,
+  }
+
+  axios
+    .post("/graphql", reqBody)
+    .then((res) => {
+      if (res.data.data.deleteContactRequest) {
+        dispatch({
+          type: GET_CONTACT_REQUESTS,
+          payload: res.data.data.deleteContactRequest,
+        })
+      }
+      if (res.data.errors) {
+        dispatch({
+          type: ERRORS,
+          payload: res.data.errors,
         })
       }
     })
