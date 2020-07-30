@@ -25,6 +25,7 @@ export const NotificationPop = ({
   userId,
   contactRequests,
   getContactRequests,
+  acceptContactRequest,
   deleteContactRequest,
 }) => {
   const classes = useStyles()
@@ -44,6 +45,7 @@ export const NotificationPop = ({
   }
 
   const acceptRequest = (cReqId) => {
+    acceptContactRequest(userId, cReqId)
     console.log("Accepting " + cReqId)
   }
 

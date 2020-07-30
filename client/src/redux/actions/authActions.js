@@ -149,6 +149,42 @@ export const getContactRequests = (userID) => (dispatch) => {
     })
 }
 
+export const acceptContactRequest = (userID, cReqId) => (dispatch) => {
+  const reqBody = {
+    query: `
+      mutation {
+        acceptContactRequest(userId: "${userID}", cReqId: "${cReqId}") {
+          id
+          username
+        }
+      }
+    `,
+  }
+
+  axios
+    .post("/graphql", reqBody)
+    .then((res) => {
+      if (res.data.data.acceptContactRequest) {
+        dispatch({
+          type: GET_CONTACT_REQUESTS,
+          payload: res.data.data.acceptContactRequest,
+        })
+      }
+      if (res.data.errors) {
+        dispatch({
+          type: ERRORS,
+          payload: res.data.errors,
+        })
+      }
+    })
+    .catch((err) => {
+      dispatch({
+        type: ERRORS,
+        payload: err,
+      })
+    })
+}
+
 export const deleteContactRequest = (userID, cReqId) => (dispatch) => {
   const reqBody = {
     query: `

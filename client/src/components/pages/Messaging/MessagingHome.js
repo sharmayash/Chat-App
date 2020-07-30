@@ -5,6 +5,7 @@ import socketIOClient from "socket.io-client"
 import { SnackbarProvider } from "notistack"
 import {
   getContactRequests,
+  acceptContactRequest,
   deleteContactRequest,
 } from "../../../redux/actions/authActions"
 
@@ -266,6 +267,7 @@ function MessagingHome(props) {
         <NotificationPop
           userId={user.id}
           getContactRequests={props.getContactRequests}
+          acceptContactRequest={props.acceptContactRequest}
           deleteContactRequest={props.deleteContactRequest}
           contactRequests={contactRequests}
         />
@@ -278,6 +280,7 @@ MessagingHome.propTypes = {
   auth: PropTypes.object.isRequired,
   room: PropTypes.object.isRequired,
   getContactRequests: PropTypes.func.isRequired,
+  acceptContactRequest: PropTypes.func.isRequired,
   deleteContactRequest: PropTypes.func.isRequired,
 }
 
@@ -286,6 +289,10 @@ const mapStateToProps = (state) => ({
   room: state.room,
 })
 
-const mapDispatchToProps = { getContactRequests, deleteContactRequest }
+const mapDispatchToProps = {
+  getContactRequests,
+  acceptContactRequest,
+  deleteContactRequest,
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(MessagingHome)

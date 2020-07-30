@@ -2,8 +2,6 @@ const Room = require("./models/Room")
 const Auth = require("./models/auth")
 const Chat = require("./models/Chat")
 
-let activeSockets = []
-
 const ioServer = (io) => {
   io.on("connection", (socket) => {
     console.log(`Socket connected ${socket.id}`)
@@ -29,7 +27,7 @@ const ioServer = (io) => {
 
       socket.join(room.roomName, (err) => {
         if (err) ackFunc(err)
-        console.log("You Joined The room")
+        console.log(`You Joined ${room.roomName}`)
       })
 
       socket.broadcast.to(room.roomName).emit("notification", {
@@ -88,7 +86,7 @@ const ioServer = (io) => {
           .then(() => console.log("Room Added To Your Account"))
           .catch((err) => ackFunc(err))
 
-        console.log("You Joined The room")
+        console.log(`You Joined ${room.roomName}`)
       })
 
       socket.broadcast.to(room.roomName).emit("notification", {
@@ -125,7 +123,7 @@ const ioServer = (io) => {
       await Auth.findByIdAndUpdate(user_id, {
         $push: { rooms: room._id },
       })
-        .then(() => console.log("Room Added To Your Account Id "))
+        .then(() => console.log("Room Added To Your Account"))
         .catch((err) =>
           ackFunc(`Error Occured while adding Room to your account ${err}`)
         )
@@ -183,53 +181,6 @@ const ioServer = (io) => {
         })
         .catch((err) => ackFunc(err))
     })
-
-    // const existingSocket = activeSockets.find(
-    //   (existingSocket) => existingSocket === socket.id
-    // )
-
-    // if (!existingSocket) {
-    //   activeSockets.push(socket.id)
-
-    //   socket.emit("update-user-list", {
-    //     users: activeSockets.filter(
-    //       (existingSocket) => existingSocket !== socket.id
-    //     ),
-    //   })
-
-    //   socket.broadcast.emit("update-user-list", {
-    //     users: [socket.id],
-    //   })
-    // }
-
-    // socket.on("call-user", (data) => {
-    //   socket.to(data.to).emit("call-made", {
-    //     offer: data.offer,
-    //     socket: socket.id,
-    //   })
-    // })
-
-    // socket.on("make-answer", (data) => {
-    //   socket.to(data.to).emit("answer-made", {
-    //     socket: socket.id,
-    //     answer: data.answer,
-    //   })
-    // })
-
-    // socket.on("reject-call", (data) => {
-    //   socket.to(data.from).emit("call-rejected", {
-    //     socket: socket.id,
-    //   })
-    // })
-
-    // socket.on("disconnect", () => {
-    //   activeSockets = activeSockets.filter(
-    //     (existingSocket) => existingSocket !== socket.id
-    //   )
-    //   socket.broadcast.emit("remove-user", {
-    //     socketId: socket.id,
-    //   })
-    // })
   })
 }
 

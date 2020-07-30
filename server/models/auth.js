@@ -22,7 +22,7 @@ const AuthSchema = new mongoose.Schema(
     contactRequests: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "auth",
+        ref: "Auth",
       },
     ],
   },

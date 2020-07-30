@@ -2,12 +2,12 @@ const bcrypt = require("bcryptjs")
 const { GraphQLString, GraphQLNonNull, GraphQLList } = require("graphql")
 
 const Auth = require("../../models/auth")
-const Contact = require("../../models/Contact")
+
 const AuthType = require("../types/AuthType")
+const ContactRequests = require("../types/ContactRequests")
+
 const createNewToken = require("../../config/signtoken")
 const validateSignUp = require("../../validation/SignUpValidation")
-const ContactRequests = require("../types/ContactRequests")
-const ContactInfo = require("../types/ContactInfo")
 
 createUser = {
   type: AuthType,
@@ -69,31 +69,41 @@ createUser = {
 }
 
 acceptContactRequest = {
-  type: ContactInfo,
+  type: new GraphQLList(ContactRequests),
   args: {
     userId: { type: GraphQLString },
     cReqId: { type: GraphQLString },
   },
   async resolve(parent, { userId, cReqId }) {
     try {
+      await Auth.findByIdAndUpdate(
+        cReqId,
+        {
+          $addToSet: { contacts: userId },
+        },
+        (err, updatedUser) => {
+          if (err) return err
+          console.log("You added as contact to others account")
+        }
+      )
+
       const user = await Auth.findByIdAndUpdate(
         userId,
         {
           $addToSet: { contacts: cReqId },
           $pull: { contactRequests: cReqId },
         },
-        { safe: true, upsert: true },
-        (err, _) => {
+        (err, updatedUser) => {
           if (err) return err
-          console.log("Contact Request Accepted")
+          console.log("You Accept Contact Request")
         }
       ).populate({
-        path: "contacts",
-        model: Contact,
-        select: "contactName _id",
+        path: "contactRequests",
+        model: Auth,
+        select: "username _id",
       })
 
-      return { contacts: user.contacts, contactReq: user.contactRequests }
+      return user.contactRequests
     } catch (error) {
       return error
     }
