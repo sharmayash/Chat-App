@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken")
+const keys = require("./keys")
 
 const createNewtoken = (newUser) => {
   let { id, name, email, username, password } = newUser
@@ -9,7 +10,7 @@ const createNewtoken = (newUser) => {
       email,
       username,
     },
-    "OurSecretKeyHere",
+    keys.secretOrKey,
     {
       expiresIn: "1h",
     }

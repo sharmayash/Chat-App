@@ -1,7 +1,8 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const keys = require("../config/keys");
 
 mongoose
-  .connect(process.env.MONGO_URI || "mongodb://localhost:27017/vidchat", {
+  .connect(keys.mongoURI, {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
