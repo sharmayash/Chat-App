@@ -1,4 +1,5 @@
 const cors = require("cors")
+const path = require("path")
 const express = require("express")
 const passport = require("passport")
 const schema = require("./graphql/index")
@@ -22,6 +23,13 @@ require("./dbConfig/")
 app.use(passport.initialize())
 require("./config/passport")(passport)
 
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("../client/build"))
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../client", "build", "index.html"))
+  })
+}
+
 // 4. Graphql
 
 app.use(
@@ -33,13 +41,6 @@ app.use(
 )
 
 // -------- Middlewares end ---------
-
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static("../client/build"))
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../client", "build", "index.html"))
-  })
-}
 
 // listening to server
 
