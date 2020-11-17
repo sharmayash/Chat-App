@@ -76,7 +76,7 @@ function MessagingHome(props) {
   })
 
   useEffect(() => {
-    setSocket(socketIOClient.connect("http://localhost:4000"))
+    setSocket(socketIOClient.connect(`wss://chatapp1998.herokuapp.com:${process.env.PORT}`))
   }, [])
 
   const { user, contactRequests } = props.auth
